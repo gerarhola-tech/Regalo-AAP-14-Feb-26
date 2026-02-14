@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para ti ❤️</title>
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            color: #4a4a4a;
+            transition: background 1s ease;
+        }
+
+        /* --- TARJETA PRINCIPAL --- */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 95%;
+            width: 500px;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+            margin: 20px 0;
+        }
+
+        h1 { color: #ff4d6d; margin-bottom: 0.5rem; font-size: 1.8rem; }
+        p { margin-bottom: 1rem; line-height: 1.5; }
+
+        /* --- CONTADOR --- */
+        #contador {
+            background: #fff0f3;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+            color: #c9184a;
+            border: 2px dashed #ffccd5;
+            font-size: 0.9rem;
+        }
+
+        /* --- CARRUSEL TIPO HISTORIA (9:16) --- */
+        .carrusel-container {
+            position: relative;
+            width: 100%;
+            /* Altura dinámica basada en aspecto 9:16 para móviles, pero con un máximo para desktop */
+            height: 600px; 
+            max-height: 75vh;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Para que se vea toda la foto/video sin cortarse */
+            background: black;
+        }
+        
+        .active { 
+            display: block !important; 
+            animation: fade 1s ease-in-out; 
+        }
+
+        /* Botones del carrusel (ocultos por defecto si es automático, pero útiles) */
+        .prev, .next {
+            cursor: pointer;
+            position: absolute;
+            top: 50%;
+            width: auto;
+            margin-top: -22px;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            transition: 0.3s ease;
+            border-radius: 0 3px 3px 0;
+            user-select: none;
+            background-color: rgba(0,0,0,0.3);
+            border: none;
+            z-index: 5;
+        }
+        .next { right: 0; border-radius: 3px 0 0 3px; }
+        .prev { left: 0; }
+        .prev:hover, .next:hover { background-color: rgba(255, 77, 109, 0.8); }
+
+        @keyframes fade { from {opacity: 0.4} to {opacity: 1} }
+
+        /* --- BOTONES --- */
+        .btn-main {
+            background: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .btn-main:hover { background: #e63950; transform: scale(1.05); }
+
+        .btn-danger {
+            background: #343a40;
+            color: #adb5bd;
+            border: 1px solid #495057;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            transition: 0.3s;
+        }
+        .btn-danger:hover { opacity: 1; background: #000; color: red; border-color: red; }
+
+        .btn-music {
+            background: #fff;
+            color: #ff4d6d;
+            border: 2px solid #ff4d6d;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.3s;
+        }
+        .btn-music:hover { background: #ff4d6d; color: white; }
+
+        #razon-container {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #590d22;
+            transition: opacity 0.3s ease;
+        }
+
+        .heart-bg {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            animation: float 6s linear infinite;
+            z-index: 1;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+        
+        #mensaje-error {
+            display: none;
+            color: #ff3333;
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            z-index: 20;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="background-animation"></div>
+
+    <!-- PANTALLA DE ERROR / AUTODESTRUCCIÓN -->
+    <div id="mensaje-error">
+        <h1 style="font-size: 4rem;">⚠️ ERROR ⚠️</h1>
+        <p style="font-size: 1.5rem; line-height: 1.6;">
+            Dile a <strong>GSR</strong> que vuelva a escribir el código<br>
+            porque ya tocaste el botón de autodestrucción.<br>
+            (Se detuvo la música y el amor... ok no, solo la música).
+        </p>
+        <p style="font-size: 3rem; margin-top: 30px;">💥💣💥</p>
+    </div>
+
+    <!-- TARJETA PRINCIPAL -->
+    <div class="card" id="tarjeta-principal">
+        <h1>Feliz 14 de Febrero mi niña hermosa ❤️</h1>
+        
+        <p>He programado esto para ti porque quería darte algo diferente ya que no soy manualidoso.</p>
+
+        <!-- BOTÓN DE MÚSICA -->
+        <button class="btn-music" onclick="toggleMusica()" id="btn-musica">
+            🎵 Ponle play a nuestra canción
+        </button>
+        
+        <!-- AUDIO LOCAL (Playlist) -->
+        <audio id="audio-player"></audio>
+        
+        <div id="contador">Calculando nuestra historia...</div>
+
+        <!-- CARRUSEL MULTIMEDIA -->
+        <div class="carrusel-container" id="carrusel-imagenes">
+            <!-- Los elementos se cargan con JS -->
+            <button class="prev" onclick="manualPrev()">&#10094;</button>
+            <button class="next" onclick="manualNext()">&#10095;</button>
+        </div>
+
+        <p id="titulo-pregunta" style="font-weight: 500; margin-top: 15px;">¿Sabes por qué llevamos juntos tantos días?</p>
+        
+        <div id="razon-container">Haz clic en el botón 👇</div>
+
+        <button class="btn-main" onclick="mostrarNuevaRazon()">Descubrir Razón</button>
+        
+        <br>
+        
+        <button class="btn-danger" onclick="iniciarAutodestruccion()">⛔ No presionar este botón</button>
+    </div>
+
+    <script>
+        // ==========================================
+        //         ZONA DE CONFIGURACIÓN
+        // ==========================================
+        
+        // 1. FECHA DE INICIO
+        const fechaInicio = new Date(2024, 7, 14); 
+
+        // 2. CONFIGURACIÓN DE ARCHIVOS
+        // Generamos las listas basadas en tus archivos
+        const imagenes = [];
+        for (let i = 1; i <= 14; i++) {
+            imagenes.push(`img${i}.jpeg`); // img1.jpeg ... img14.jpeg
+        }
+        
+        const videos = [];
+        for (let i = 1; i <= 6; i++) {
+            videos.push(`video${i}.mp4`); // video1.mp4 ... video6.mp4
+        }
+        
+        const videoFinal = "videofin.mp4";
+
+        // 3. TUS RAZONES
+        const razones = [
+            "Porque eres la más hermosa",
+            "Por cómo me apoyas siempre",
+            "Porque ves las noticias conmigo",
+            "Por tu paciencia cuando me pongo 'nerd' y te hablo de cosas tecnológicas o BTC",
+            "Porque cocinas delicioso",
+            "Porque aparte de cocinar delicioso siempre le metes amor a mis platillos",
+            "Porque simplemente estar contigo es mi safe place",
+            "Por cada detalle que tienes conmigo",
+            "Por jugar xbox conmigo y terminar el juego en una noche",
+            "¡Porque te amo más de lo que este código puede expresar!"
+        ];
+
+        // ==========================================
+        //       LÓGICA
+        // ==========================================
+
+        // --- 1. MÚSICA (LISTA DE REPRODUCCIÓN) ---
+        const audio = document.getElementById('audio-player');
+        const btnMusica = document.getElementById('btn-musica');
+        let isPlaying = false;
+        const playlist = ["cancion.mp4", "cancion2.mp4"];
+        let currentTrack = 0;
+
+        audio.src = playlist[currentTrack];
+        audio.addEventListener('ended', function() {
+            currentTrack++;
+            if (currentTrack >= playlist.length) currentTrack = 0;
+            audio.src = playlist[currentTrack];
+            audio.play();
+        });
+
+        function toggleMusica() {
+            if (isPlaying) {
+                audio.pause();
+                btnMusica.innerHTML = "🎵 Ponle play a nuestra canción";
+                isPlaying = false;
+            } else {
+                audio.play().catch(e => alert("No encuentro los archivos de música."));
+                btnMusica.innerHTML = "⏸ Pausar Música";
+                isPlaying = true;
+            }
+        }
+
+        // --- 2. CONTADOR ---
+        function actualizarContador() {
+            const ahora = new Date();
+            const diferencia = ahora - fechaInicio;
+            const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById('contador').innerHTML = `Llevamos ${dias} días, ${horas} horas y ${minutos} minutos juntos.`;
+            document.getElementById('titulo-pregunta').innerText = `¿Sabes por qué llevamos juntos ${dias} días?`;
+        }
+        setInterval(actualizarContador, 1000);
+        actualizarContador(); 
+
+        // --- 3. CARRUSEL INTELIGENTE Y AUTOMÁTICO ---
+        let slideIndex = 0;
+        let slidesElements = [];
+        let autoPlayTimer = null; // Para controlar el tiempo de las fotos
+
+        // Función para mezclar array (Fisher-Yates shuffle)
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function cargarGaleria() {
+            const contenedor = document.getElementById('carrusel-imagenes');
+            const prevBtn = contenedor.querySelector('.prev');
+
+            // 1. Mezclar contenido normal
+            let contenidoMezclado = shuffle([...imagenes, ...videos]);
+            
+            // 2. Agregar el video final AL FINAL
+            contenidoMezclado.push(videoFinal);
+
+            // 3. Crear elementos
+            contenidoMezclado.forEach((archivo, index) => {
+                let elemento;
+                if (archivo.endsWith('.mp4')) {
+                    elemento = document.createElement('video');
+                    elemento.src = archivo;
+                    elemento.className = 'slide';
+                    elemento.muted = true; // Importante para autoplay sin interacción
+                    elemento.playsInline = true; // Para iPhone
+                    // Si es video, cuando termine, pasa al siguiente
+                    elemento.onended = function() {
+                        nextSlideAutomatic();
+                    };
+                } else {
+                    elemento = document.createElement('img');
+                    elemento.src = archivo;
+                    elemento.className = 'slide';
+                }
+                
+                contenedor.insertBefore(elemento, prevBtn);
+            });
+
+            slidesElements = document.getElementsByClassName("slide");
+            
+            // Iniciar carrusel
+            if(slidesElements.length > 0) {
+                mostrarSlide(0);
+            }
+        }
+
+        function mostrarSlide(n) {
+            // Limpiar temporizadores anteriores
+            if(autoPlayTimer) clearTimeout(autoPlayTimer);
+
+            // Ocultar todos
+            for (let i = 0; i < slidesElements.length; i++) {
+                slidesElements[i].classList.remove("active");
+                // Pausar videos si no están activos
+                if(slidesElements[i].tagName === 'VIDEO') {
+                    slidesElements[i].pause();
+                    slidesElements[i].currentTime = 0;
+                }
+            }
+
+            // Calcular índice cíclico
+            slideIndex = n;
+            if (slideIndex >= slidesElements.length) slideIndex = 0;
+            if (slideIndex < 0) slideIndex = slidesElements.length - 1;
+
+            // Mostrar actual
+            const currentSlide = slidesElements[slideIndex];
+            currentSlide.classList.add("active");
+
+            // LÓGICA DE AUTOMATIZACIÓN
+            if (currentSlide.tagName === 'VIDEO') {
+                // Si es video, reproducir. El evento 'onended' llamará al siguiente.
+                currentSlide.play().catch(e => console.log("Interacción requerida para audio"));
+            } else {
+                // Si es imagen, esperar 3 segundos y pasar al siguiente
+                autoPlayTimer = setTimeout(() => {
+                    nextSlideAutomatic();
+                }, 3000);
+            }
+        }
+
+        function nextSlideAutomatic() {
+            mostrarSlide(slideIndex + 1);
+        }
+
+        // Control manual
+        function manualNext() {
+            mostrarSlide(slideIndex + 1);
+        }
+        function manualPrev() {
+            mostrarSlide(slideIndex - 1);
+        }
+
+        document.addEventListener('DOMContentLoaded', cargarGaleria);
+
+
+        // --- 4. RAZONES ---
+        let indiceRazon = 0;
+        function mostrarNuevaRazon() {
+            const container = document.getElementById('razon-container');
+            container.style.opacity = 0;
+            setTimeout(() => {
+                container.innerText = razones[indiceRazon];
+                container.style.opacity = 1;
+                indiceRazon++;
+                if (indiceRazon >= razones.length) indiceRazon = 0;
+            }, 300);
+        }
+
+        // --- 5. EFECTOS ---
+        function crearCorazones() {
+            if(document.getElementById('tarjeta-principal').style.display === 'none') return;
+            const bg = document.getElementById('background-animation');
+            const heart = document.createElement('div');
+            heart.classList.add('heart-bg');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+        setInterval(crearCorazones, 500);
+
+        // --- 6. AUTODESTRUCCIÓN ---
+        function iniciarAutodestruccion() {
+            if(isPlaying) { audio.pause(); isPlaying = false; }
+            document.getElementById('tarjeta-principal').style.display = 'none';
+            document.body.style.background = '#000';
+            document.getElementById('background-animation').innerHTML = '';
+            document.getElementById('mensaje-error').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
